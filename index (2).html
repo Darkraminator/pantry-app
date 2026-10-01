@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What's in the Pantry</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pantry">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2e8b4f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #24291f;
+    --ink-soft: #4a5240;
+    --paper: #f5f1e6;
+    --paper-dim: #ece5d3;
+    --line: #d9d0b8;
+    --herb: #2e8b4f;
+    --herb-dark: #1f6438;
+    --mustard: #e3a412;
+    --tomato: #e0532c;
+    --sky: #1e88c7;
+    --plum: #9450c4;
+    --berry: #d63d72;
+    --card: #fffdf7;
+    --shadow: rgba(36, 41, 31, 0.14);
+    --radius-sm: 3px;
+    --radius-md: 6px;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ink: #ece7d8;
+      --ink-soft: #c3bda8;
+      --paper: #1c1f17;
+      --paper-dim: #242820;
+      --line: #3a3e30;
+      --herb: #5fc37f;
+      --herb-dark: #3f9c5c;
+      --mustard: #f2bb3a;
+      --tomato: #ef7a52;
+      --sky: #52b3ef;
+      --plum: #b784e6;
+      --berry: #ef6d97;
+      --card: #22261d;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #ece7d8;
+    --ink-soft: #c3bda8;
+    --paper: #1c1f17;
+    --paper-dim: #242820;
+    --line: #3a3e30;
+    --herb: #5fc37f;
+    --herb-dark: #3f9c5c;
+    --mustard: #f2bb3a;
+    --tomato: #ef7a52;
+    --sky: #52b3ef;
+    --plum: #b784e6;
+    --berry: #ef6d97;
+    --card: #22261d;
+    --shadow: rgba(0, 0, 0, 0.4);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100%;
+  }
+  h1, h2, h3, .display {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 2.2rem 1.5rem 5rem;
+  }
+  header.page {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2.4rem;
+    padding-bottom: 1.1rem;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  header.page::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 5px;
+    background: linear-gradient(90deg,
+      var(--herb) 0 16%, var(--mustard) 16% 33%, var(--tomato) 33% 50%,
+      var(--sky) 50% 67%, var(--plum) 67% 84%, var(--berry) 84% 100%);
+    border-radius: 3px;
+  }
+  header.page .title-block h1 {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.05;
+  }
+  header.page .title-block p {
+    margin: 0.35rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    max-width: 34ch;
+  }
+  .theme-toggle {
+    background: none;
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .theme-toggle:hover { background: var(--paper-dim); }
+  .header-actions {
+    display: flex;
+    gap: 0.6rem;
+  }
+  #installBtn {
+    border-color: var(--mustard);
+    color: var(--mustard);
+  }
+  #installBtn:hover { background: var(--mustard); color: var(--paper); }
+  .ios-install-tip {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: var(--paper-dim);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.8rem;
+    margin: -1.4rem 0 1.6rem;
+    display: none;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 340px) 1fr;
+    gap: 2.4rem;
+    align-items: start;
+  }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .pantry-panel h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.9rem;
+  }
+  .add-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.1rem;
+  }
+  .add-row input {
+    flex: 1;
+    font-family: 'Karla', sans-serif;
+    font-size: 1rem;
+    padding: 0.65rem 0.8rem;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    color: var(--ink);
+  }
+  .add-row input:focus { outline: 2px solid var(--herb); outline-offset: 1px; }
+  .add-row button {
+    background: var(--herb);
+    color: var(--paper);
+    border: none;
+    font-family: 'Karla', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    line-height: 1;
+    width: 44px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .add-row button:hover { background: var(--herb-dark); }
+  .add-row button:focus-visible, .theme-toggle:focus-visible, input:focus-visible { outline: 2px solid var(--herb); outline-offset: 2px; }
+
+  .quick-add {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.4rem;
+  }
+  .quick-add span {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    width: 100%;
+    text-transform: lowercase;
+  }
+  .quick-add button {
+    background: none;
+    border: 1.5px dashed var(--dot, var(--line));
+    color: var(--ink-soft);
+    font-family: 'Karla', sans-serif;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .quick-add button:hover { border-style: solid; color: var(--ink); }
+
+  .pantry-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .pantry-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.6rem 0.1rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.98rem;
+  }
+  .pantry-list li span.name {
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .pantry-list li span.name::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--dot, var(--herb));
+    flex-shrink: 0;
+  }
+  .pantry-list li button {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.2rem 0.4rem;
+  }
+  .pantry-list li button:hover { color: var(--tomato); }
+  .empty-pantry {
+    padding: 1.4rem 0.2rem;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .pantry-count {
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  .recipes-panel h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+  }
+  .recipes-panel > p.sub {
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    margin: 0 0 1.3rem;
+  }
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.1rem;
+  }
+  .recipe-card {
+    --accent: var(--herb);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 1.15rem 1.15rem 1.2rem;
+    box-shadow: 0 2px 8px var(--shadow);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .recipe-card.ready { border-color: var(--herb); border-top-color: var(--herb); }
+  .match-pill {
+    position: absolute;
+    top: -10px;
+    right: 14px;
+    background: var(--accent);
+    color: #fffdf7;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.22rem 0.55rem;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
+  }
+  .recipe-card.ready .match-pill { background: var(--herb); }
+  .recipe-card h3 {
+    font-size: 1.15rem;
+    padding-right: 3.2rem;
+    line-height: 1.2;
+  }
+  .recipe-meta {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .cuisine-chip {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent);
+    font-weight: 700;
+    padding: 0.12rem 0.55rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+  }
+  .ingredient-line {
+    font-size: 0.87rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .ingredient-line .have { color: var(--ink); }
+  .ingredient-line .missing { color: var(--tomato); text-decoration: underline dotted; text-underline-offset: 3px; }
+  .recipe-card details {
+    margin-top: 0.2rem;
+    font-size: 0.87rem;
+  }
+  .recipe-card summary {
+    cursor: pointer;
+    color: var(--herb-dark);
+    font-weight: 600;
+    list-style: none;
+  }
+  .recipe-card summary::-webkit-details-marker { display: none; }
+  .recipe-card summary::after { content: " ›"; }
+  .recipe-card details[open] summary::after { content: " ⌄"; }
+  .recipe-card ol {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .no-match {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    padding: 2rem 0.2rem;
+    border-top: 1px dashed var(--line);
+  }
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    margin-bottom: 1.2rem;
+  }
+  #cuisineSelect {
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    border-radius: 20px;
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+  }
+  .filter-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .filter-row button {
+    background: none;
+    border: 1.5px solid var(--line);
+    color: var(--ink-soft);
+    font-family: 'Karla', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .filter-row button.active {
+    border-color: var(--herb);
+    background: var(--herb);
+    color: var(--paper);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <div class="title-block">
+      <h1>What's in the Pantry</h1>
+      <p>Log what you have. See what you can cook.</p>
+    </div>
+    <div class="header-actions">
+      <button class="theme-toggle" id="installBtn" type="button" style="display:none;">Install app</button>
+      <button class="theme-toggle" id="themeToggle" type="button">Dark mode</button>
+    </div>
+  </header>
+
+  <p class="ios-install-tip" id="iosTip">Tap the Share icon in Safari, then "Add to Home Screen" to install this as an app.</p>
+
+  <div class="layout">
+    <section class="pantry-panel" aria-label="Your pantry">
+      <h2>Your pantry</h2>
+      <form class="add-row" id="addForm">
+        <input type="text" id="itemInput" placeholder="Add an ingredient…" autocomplete="off">
+        <button type="submit" aria-label="Add ingredient">+</button>
+      </form>
+      <div class="quick-add" id="quickAdd">
+        <span>common staples</span>
+      </div>
+      <ul class="pantry-list" id="pantryList"></ul>
+      <div class="pantry-count" id="pantryCount"></div>
+    </section>
+
+    <section class="recipes-panel" aria-label="Recipe matches">
+      <h2 id="recipeHeading">Recipes you can make</h2>
+      <p class="sub" id="recipeSub">Add a few ingredients to see matches.</p>
+      <div class="filter-bar">
+        <select id="cuisineSelect" aria-label="Filter by cuisine"></select>
+        <div class="filter-row" id="filterRow"></div>
+      </div>
+      <div class="recipe-grid" id="recipeGrid"></div>
+      <div class="no-match" id="noMatch" style="display:none;"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Recipe database ----------
+  var RECIPES = [
+    {name:"Garlic Butter Pasta", cuisine:"Italy", time:"20 min", tags:["quick","vegetarian"], ingredients:["pasta","butter","garlic","parmesan","black pepper","salt"], steps:["Boil pasta in salted water until al dente, reserving a cup of pasta water.","Melt butter in a pan, add minced garlic and cook until fragrant.","Toss pasta into the pan with a splash of pasta water and grated parmesan.","Season with black pepper and salt, serve hot."]},
+    {name:"Tomato Egg Stir-Fry", cuisine:"China", time:"15 min", tags:["quick","vegetarian"], ingredients:["egg","tomato","scallion","salt","oil","sugar"], steps:["Beat eggs with a pinch of salt and scramble in hot oil, then set aside.","Cook chopped tomato in the same pan until soft and saucy.","Add a pinch of sugar, return eggs to the pan and toss together.","Top with sliced scallion and serve over rice."]},
+    {name:"Chickpea & Spinach Curry", cuisine:"India", time:"30 min", tags:["vegetarian","vegan"], ingredients:["chickpeas","spinach","onion","garlic","ginger","tomato","coconut milk","curry powder","oil","salt"], steps:["Sauté onion, garlic and ginger in oil until soft.","Stir in curry powder and cook a minute until fragrant.","Add tomato and chickpeas, simmer 10 minutes.","Stir in coconut milk and spinach, cook until wilted, season with salt."]},
+    {name:"Classic Omelette", cuisine:"France", time:"10 min", tags:["quick","vegetarian","breakfast"], ingredients:["egg","butter","salt","black pepper","cheese"], steps:["Whisk eggs with salt and pepper.","Melt butter in a pan over medium heat.","Pour in eggs, let set slightly, sprinkle cheese over one half.","Fold and slide onto a plate."]},
+    {name:"Fried Rice", cuisine:"China", time:"20 min", tags:["quick"], ingredients:["rice","egg","carrot","peas","scallion","soy sauce","garlic","oil"], steps:["Heat oil and scramble egg, set aside.","Sauté garlic, carrot and peas until just tender.","Add cold cooked rice, breaking up clumps, stir-fry until hot.","Return egg, add soy sauce and scallion, toss and serve."]},
+    {name:"Black Bean Tacos", cuisine:"Mexico", time:"20 min", tags:["vegetarian","vegan"], ingredients:["black beans","tortilla","onion","lime","cilantro","cumin","salt","avocado"], steps:["Warm black beans with cumin and a splash of water, mash lightly.","Char tortillas over a flame or dry pan.","Fill tortillas with beans, diced onion and avocado.","Finish with lime juice and cilantro."]},
+    {name:"Lentil Soup", cuisine:"Mediterranean", time:"35 min", tags:["vegetarian","vegan"], ingredients:["lentils","onion","carrot","celery","garlic","vegetable broth","cumin","salt","olive oil"], steps:["Sauté onion, carrot, celery and garlic in olive oil until soft.","Add lentils, cumin and broth, bring to a boil.","Simmer 25 minutes until lentils are tender.","Season with salt and serve."]},
+    {name:"Chicken Stir-Fry", cuisine:"China", time:"25 min", tags:["quick"], ingredients:["chicken breast","broccoli","carrot","garlic","ginger","soy sauce","oil","cornstarch"], steps:["Slice chicken thin and toss with a little cornstarch.","Sear chicken in hot oil until browned, set aside.","Stir-fry broccoli, carrot, garlic and ginger until crisp-tender.","Return chicken, add soy sauce, toss and serve."]},
+    {name:"Caprese Salad", cuisine:"Italy", time:"10 min", tags:["quick","vegetarian","no-cook"], ingredients:["tomato","mozzarella","basil","olive oil","salt","black pepper"], steps:["Slice tomato and mozzarella into rounds.","Layer alternating with basil leaves.","Drizzle with olive oil.","Season with salt and pepper."]},
+    {name:"Banana Pancakes", cuisine:"USA", time:"20 min", tags:["vegetarian","breakfast"], ingredients:["banana","egg","flour","milk","baking powder","butter","sugar"], steps:["Mash banana and whisk in egg and milk.","Fold in flour, baking powder and sugar until just combined.","Cook spoonfuls of batter in buttered pan until bubbles form, then flip.","Serve warm."]},
+    {name:"Shakshuka", cuisine:"Middle East", time:"30 min", tags:["vegetarian","breakfast"], ingredients:["egg","tomato","onion","garlic","bell pepper","cumin","paprika","olive oil","salt"], steps:["Sauté onion and bell pepper in olive oil until soft.","Add garlic, cumin and paprika, cook until fragrant.","Add tomato, simmer into a thick sauce.","Crack eggs into the sauce, cover and cook until whites set."]},
+    {name:"Beef and Broccoli", cuisine:"China", time:"25 min", tags:["quick"], ingredients:["beef","broccoli","garlic","soy sauce","oyster sauce","cornstarch","oil","ginger"], steps:["Slice beef thin, toss with cornstarch.","Sear beef in hot oil, set aside.","Stir-fry broccoli, garlic and ginger until tender.","Return beef, add soy and oyster sauce, toss to coat."]},
+    {name:"Margherita Toast", cuisine:"Italy", time:"10 min", tags:["quick","vegetarian"], ingredients:["bread","tomato","mozzarella","basil","olive oil","salt"], steps:["Toast bread until golden.","Top with sliced tomato and mozzarella.","Broil until cheese melts.","Finish with basil, olive oil and salt."]},
+    {name:"Vegetable Fried Noodles", cuisine:"China", time:"20 min", tags:["quick","vegetarian"], ingredients:["noodles","carrot","cabbage","bell pepper","garlic","soy sauce","oil","scallion"], steps:["Boil noodles until just tender, drain.","Stir-fry garlic, carrot, cabbage and bell pepper in oil.","Add noodles and soy sauce, toss well.","Top with scallion."]},
+    {name:"Baked Salmon", cuisine:"Nordic", time:"25 min", tags:["quick"], ingredients:["salmon","lemon","garlic","olive oil","salt","black pepper","dill"], steps:["Preheat oven to 400°F / 200°C.","Rub salmon with olive oil, garlic, salt and pepper.","Bake 12–15 minutes until just cooked through.","Finish with lemon juice and dill."]},
+    {name:"Mushroom Risotto", cuisine:"Italy", time:"40 min", tags:["vegetarian"], ingredients:["rice","mushroom","onion","garlic","vegetable broth","parmesan","butter","white wine"], steps:["Sauté onion, garlic and mushroom in butter until soft.","Add rice, toast a minute, then deglaze with wine.","Add broth a ladle at a time, stirring until absorbed, about 20 minutes.","Finish with butter and parmesan."]},
+    {name:"Greek Salad", cuisine:"Greece", time:"10 min", tags:["quick","vegetarian","no-cook"], ingredients:["cucumber","tomato","red onion","feta","olives","olive oil","oregano","salt"], steps:["Chop cucumber, tomato and red onion.","Toss with olives and feta.","Dress with olive oil and oregano.","Season with salt."]},
+    {name:"Peanut Noodles", cuisine:"China", time:"15 min", tags:["quick","vegetarian"], ingredients:["noodles","peanut butter","soy sauce","garlic","lime","scallion","sesame oil","chili flakes"], steps:["Boil noodles until tender, drain and rinse.","Whisk peanut butter, soy sauce, garlic, lime and sesame oil into a sauce.","Toss noodles with the sauce.","Top with scallion and chili flakes."]},
+    {name:"Vegetable Omelette", cuisine:"France", time:"12 min", tags:["quick","vegetarian","breakfast"], ingredients:["egg","bell pepper","onion","spinach","cheese","salt","black pepper","butter"], steps:["Sauté bell pepper, onion and spinach in butter until soft.","Whisk eggs with salt and pepper, pour over vegetables.","Sprinkle cheese on top, cook until set.","Fold and serve."]},
+    {name:"Congee", cuisine:"China", time:"45 min", tags:["vegetarian"], ingredients:["rice","water","ginger","scallion","salt","soy sauce"], steps:["Simmer rice in plenty of water with sliced ginger, stirring occasionally.","Cook 35–40 minutes until creamy and thick.","Season with salt and soy sauce.","Top with scallion."]},
+    {name:"Guacamole", cuisine:"Mexico", time:"10 min", tags:["quick","vegan","no-cook"], ingredients:["avocado","lime","onion","cilantro","tomato","salt","chili"], steps:["Mash avocado to desired texture.","Fold in diced onion, tomato and cilantro.","Add lime juice and salt.","Add chili to taste."]},
+    {name:"Baked Sweet Potato", cuisine:"USA", time:"45 min", tags:["vegetarian","vegan"], ingredients:["sweet potato","olive oil","salt","black pepper"], steps:["Preheat oven to 425°F / 220°C.","Rub sweet potatoes with olive oil and salt.","Bake 40–45 minutes until tender.","Split open and season with pepper."]},
+    {name:"Caesar Salad", cuisine:"Mexico", time:"15 min", tags:["quick"], ingredients:["lettuce","parmesan","bread","garlic","olive oil","lemon","anchovy","black pepper"], steps:["Toast cubed bread with garlic and olive oil for croutons.","Whisk lemon, anchovy and olive oil into a dressing.","Toss lettuce with dressing.","Top with parmesan, croutons and pepper."]},
+    {name:"Onion Soup", cuisine:"France", time:"50 min", tags:["vegetarian"], ingredients:["onion","butter","vegetable broth","bread","cheese","salt","black pepper"], steps:["Cook sliced onion slowly in butter until deeply caramelized, about 35 minutes.","Add broth and simmer 10 minutes.","Ladle into bowls, top with bread and cheese.","Broil until cheese is bubbly."]},
+    {name:"Hummus", cuisine:"Middle East", time:"10 min", tags:["quick","vegan","no-cook"], ingredients:["chickpeas","tahini","lemon","garlic","olive oil","salt","cumin"], steps:["Blend chickpeas, tahini, lemon juice and garlic until smooth.","Add olive oil and cumin, blend again.","Season with salt.","Adjust texture with a splash of water if needed."]},
+    {name:"Baked Ziti", cuisine:"Italy", time:"45 min", tags:["vegetarian"], ingredients:["pasta","tomato sauce","mozzarella","ricotta","parmesan","garlic","basil","salt"], steps:["Boil pasta until just shy of al dente.","Mix with tomato sauce, ricotta and half the mozzarella.","Transfer to a baking dish, top with remaining cheese.","Bake at 400°F / 200°C for 20 minutes until bubbly."]},
+    {name:"Miso Soup", cuisine:"Japan", time:"15 min", tags:["quick","vegetarian"], ingredients:["miso paste","tofu","scallion","seaweed","water"], steps:["Bring water to a gentle simmer.","Whisk in miso paste until dissolved.","Add cubed tofu and seaweed, warm through.","Top with scallion."]},
+    {name:"Roast Chicken Thighs", cuisine:"France", time:"40 min", tags:[], ingredients:["chicken thighs","garlic","lemon","olive oil","rosemary","salt","black pepper"], steps:["Preheat oven to 425°F / 220°C.","Rub chicken with olive oil, garlic, rosemary, salt and pepper.","Roast 35–40 minutes until skin is crisp and cooked through.","Finish with a squeeze of lemon."]},
+    {name:"Vegetable Quesadilla", cuisine:"Mexico", time:"15 min", tags:["quick","vegetarian"], ingredients:["tortilla","cheese","bell pepper","onion","black beans","oil"], steps:["Sauté bell pepper and onion until soft.","Layer cheese, vegetables and black beans on a tortilla, fold over.","Cook in an oiled pan until golden on both sides.","Cheese should be fully melted, slice and serve."]},
+    {name:"Apple Cinnamon Oatmeal", cuisine:"USA", time:"10 min", tags:["quick","vegetarian","breakfast"], ingredients:["oats","apple","milk","cinnamon","honey"], steps:["Simmer oats in milk until creamy.","Stir in diced apple and cinnamon partway through.","Cook until oats are tender.","Finish with a drizzle of honey."]},
+    {name:"Pesto Pasta", cuisine:"Italy", time:"20 min", tags:["quick","vegetarian"], ingredients:["pasta","basil","pine nuts","parmesan","garlic","olive oil","salt"], steps:["Boil pasta until al dente.","Blend basil, pine nuts, parmesan, garlic and olive oil into a pesto.","Toss pasta with pesto, loosening with pasta water if needed.","Season with salt and serve."]},
+
+    {name:"Mapo Tofu", cuisine:"China", time:"25 min", tags:["quick","vegetarian"], ingredients:["tofu","garlic","ginger","scallion","chili bean paste","soy sauce","cornstarch","oil"], steps:["Fry garlic, ginger and chili bean paste in oil until fragrant.","Add a splash of water and bring to a simmer.","Gently slide in cubed tofu, simmer 5 minutes.","Thicken with a cornstarch slurry and top with scallion."]},
+    {name:"Kung Pao Chicken", cuisine:"China", time:"25 min", tags:["quick"], ingredients:["chicken breast","peanuts","bell pepper","garlic","ginger","soy sauce","vinegar","chili","cornstarch","oil"], steps:["Toss diced chicken with cornstarch and sear in hot oil, set aside.","Stir-fry garlic, ginger, chili and bell pepper briefly.","Add soy sauce and vinegar, return chicken to the pan.","Toss in peanuts and serve."]},
+    {name:"Dan Dan Noodles", cuisine:"China", time:"25 min", tags:["quick"], ingredients:["noodles","pork","garlic","scallion","chili oil","soy sauce","sesame paste","peanuts"], steps:["Brown minced pork with garlic until crisp.","Whisk sesame paste, soy sauce and chili oil into a sauce in each bowl.","Boil noodles and add to the bowls with sauce.","Top with pork, scallion and crushed peanuts."]},
+    {name:"Bibimbap", cuisine:"Korea", time:"35 min", tags:["vegetarian"], ingredients:["rice","egg","spinach","carrot","zucchini","garlic","sesame oil","gochujang","soy sauce"], steps:["Sauté spinach, carrot and zucchini separately with garlic and sesame oil.","Fry an egg sunny-side up.","Arrange rice in a bowl, top with the vegetables and egg.","Finish with a spoon of gochujang and a drizzle of sesame oil."]},
+    {name:"Kimchi Fried Rice", cuisine:"Korea", time:"15 min", tags:["quick","vegetarian"], ingredients:["rice","kimchi","egg","scallion","sesame oil","soy sauce","oil"], steps:["Stir-fry chopped kimchi in oil until slightly caramelized.","Add cold rice and soy sauce, breaking up clumps.","Push rice aside, fry an egg in the same pan.","Top rice with the egg, scallion and a drizzle of sesame oil."]},
+    {name:"Japchae", cuisine:"Korea", time:"30 min", tags:["vegetarian"], ingredients:["sweet potato noodles","spinach","carrot","onion","garlic","soy sauce","sesame oil","sugar"], steps:["Boil sweet potato noodles until tender, drain and toss with sesame oil.","Sauté carrot, onion and garlic until just tender.","Blanch spinach briefly and squeeze dry.","Toss noodles with vegetables, soy sauce and a pinch of sugar."]},
+    {name:"Teriyaki Chicken", cuisine:"Japan", time:"25 min", tags:["quick"], ingredients:["chicken thighs","soy sauce","sugar","garlic","ginger","oil","scallion"], steps:["Sear chicken thighs skin-side down until golden and crisp.","Flip and cook through.","Whisk soy sauce, sugar, garlic and ginger, pour into the pan.","Simmer until glossy and thickened, top with scallion."]},
+    {name:"Onigiri", cuisine:"Japan", time:"15 min", tags:["quick","vegetarian","no-cook"], ingredients:["rice","seaweed","salt","salmon"], steps:["Cook rice and let cool just enough to handle.","Wet hands with salted water, mold rice into a triangle around a spoon of filling.","Wrap a strip of seaweed around the base.","Serve at room temperature."]},
+    {name:"Chicken Katsu", cuisine:"Japan", time:"30 min", tags:[], ingredients:["chicken breast","flour","egg","breadcrumbs","oil","cabbage","soy sauce"], steps:["Pound chicken thin, season, and coat in flour, egg, then breadcrumbs.","Shallow-fry until deeply golden and cooked through.","Rest briefly, then slice.","Serve over shredded cabbage with a drizzle of soy sauce."]},
+    {name:"Chana Masala", cuisine:"India", time:"30 min", tags:["vegetarian","vegan"], ingredients:["chickpeas","onion","tomato","garlic","ginger","cumin","coriander","turmeric","chili powder","oil","salt"], steps:["Sauté onion in oil until golden, add garlic and ginger.","Stir in cumin, coriander, turmeric and chili powder, cook briefly.","Add tomato and cook down into a thick sauce.","Add chickpeas and simmer 10 minutes, season with salt."]},
+    {name:"Dal Tadka", cuisine:"India", time:"30 min", tags:["vegetarian","vegan"], ingredients:["lentils","onion","tomato","garlic","cumin seeds","turmeric","chili","oil","salt"], steps:["Simmer lentils with turmeric and salt until soft.","In a separate small pan, sizzle cumin seeds and garlic in hot oil.","Add onion, tomato and chili, cook until softened.","Pour this tempering over the lentils and stir through."]},
+    {name:"Butter Chicken", cuisine:"India", time:"40 min", tags:[], ingredients:["chicken thighs","yogurt","tomato","butter","garlic","ginger","garam masala","chili powder","cream","salt"], steps:["Marinate chicken in yogurt, garlic, ginger and spices if time allows.","Sear chicken in butter until browned, set aside.","Simmer tomato with remaining garlic and ginger into a smooth sauce.","Stir in cream and butter, return chicken and simmer until cooked through."]},
+    {name:"Vegetable Biryani", cuisine:"India", time:"45 min", tags:["vegetarian"], ingredients:["rice","carrot","peas","onion","garlic","ginger","yogurt","garam masala","turmeric","oil","salt"], steps:["Sauté onion in oil until deep golden, add garlic, ginger and spices.","Add carrot and peas, cook a few minutes.","Layer in par-cooked rice and a few spoons of yogurt.","Cover and steam on low heat until rice is fully tender."]},
+    {name:"Pad Thai", cuisine:"Thailand", time:"25 min", tags:["quick"], ingredients:["rice noodles","egg","tofu","bean sprouts","peanuts","lime","fish sauce","tamarind","sugar","garlic"], steps:["Soak rice noodles until pliable.","Stir-fry garlic and tofu in a hot pan, push aside and scramble in egg.","Add noodles with fish sauce, tamarind and sugar, toss well.","Fold in bean sprouts, top with peanuts and lime."]},
+    {name:"Thai Green Curry", cuisine:"Thailand", time:"30 min", tags:[], ingredients:["chicken breast","coconut milk","green curry paste","eggplant","bell pepper","basil","fish sauce","sugar"], steps:["Simmer a spoonful of coconut milk with curry paste until fragrant.","Add chicken and cook until sealed.","Pour in remaining coconut milk, eggplant and bell pepper, simmer until tender.","Season with fish sauce and sugar, finish with basil."]},
+    {name:"Tom Yum Soup", cuisine:"Thailand", time:"25 min", tags:["quick"], ingredients:["shrimp","mushroom","lemongrass","lime","fish sauce","chili","garlic","cilantro"], steps:["Simmer lemongrass, garlic and chili in water to build a fragrant broth.","Add mushroom and shrimp, cook until shrimp turns pink.","Season with fish sauce and lime juice off the heat.","Top with cilantro."]},
+    {name:"Thai Basil Chicken", cuisine:"Thailand", time:"20 min", tags:["quick"], ingredients:["chicken breast","garlic","chili","basil","fish sauce","soy sauce","sugar","oil","egg"], steps:["Stir-fry garlic and chili in hot oil.","Add minced chicken, breaking it up, cook through.","Season with fish sauce, soy sauce and sugar, fold in basil.","Serve over rice with a fried egg on top."]},
+    {name:"Pho", cuisine:"Vietnam", time:"40 min", tags:["quick"], ingredients:["rice noodles","beef","onion","ginger","beef broth","star anise","fish sauce","cilantro","lime","bean sprouts"], steps:["Simmer broth with charred onion, ginger and star anise for depth.","Season with fish sauce.","Cook rice noodles and place in bowls with thinly sliced raw beef.","Ladle hot broth over to cook the beef, top with herbs, lime and bean sprouts."]},
+    {name:"Banh Mi", cuisine:"Vietnam", time:"20 min", tags:["quick"], ingredients:["baguette","pork","carrot","cucumber","cilantro","mayonnaise","soy sauce","chili"], steps:["Marinate and pan-sear pork slices with a little soy sauce until caramelized.","Quick-pickle shredded carrot in vinegar if time allows.","Split baguette and spread with mayonnaise.","Layer in pork, pickled carrot, cucumber, cilantro and chili."]},
+    {name:"Vietnamese Spring Rolls", cuisine:"Vietnam", time:"25 min", tags:["no-cook"], ingredients:["rice paper","shrimp","rice noodles","lettuce","cilantro","mint","peanuts","fish sauce","lime"], steps:["Soften rice paper briefly in warm water.","Layer lettuce, noodles, shrimp and herbs near the edge.","Roll tightly, tucking in the sides.","Serve with a peanut or lime fish sauce dip."]},
+    {name:"Nasi Goreng", cuisine:"Indonesia", time:"20 min", tags:["quick"], ingredients:["rice","egg","garlic","shallot","chili","soy sauce","shrimp paste","scallion","oil"], steps:["Blend garlic, shallot and chili into a paste.","Fry the paste in oil until fragrant.","Add cold rice and soy sauce, stir-fry until well coated.","Top with a fried egg and scallion."]},
+    {name:"Falafel", cuisine:"Middle East", time:"30 min", tags:["vegetarian","vegan"], ingredients:["chickpeas","onion","garlic","parsley","cumin","coriander","flour","oil","salt"], steps:["Pulse soaked chickpeas with onion, garlic, parsley and spices until coarse.","Bind with a little flour and salt.","Shape into small patties.","Shallow-fry until golden and crisp on both sides."]},
+    {name:"Tabbouleh", cuisine:"Middle East", time:"20 min", tags:["vegetarian","vegan","no-cook"], ingredients:["bulgur","parsley","tomato","onion","lemon","olive oil","salt"], steps:["Soak bulgur in hot water until tender, then drain well.","Finely chop parsley, tomato and onion.","Toss everything with lemon juice and olive oil.","Season with salt and chill briefly before serving."]},
+    {name:"Fattoush", cuisine:"Middle East", time:"15 min", tags:["vegetarian","vegan","no-cook"], ingredients:["lettuce","cucumber","tomato","radish","pita","lemon","olive oil","sumac","salt"], steps:["Toast or fry pita until crisp, break into pieces.","Chop lettuce, cucumber, tomato and radish.","Toss with lemon juice, olive oil and sumac.","Add the crisp pita just before serving."]},
+    {name:"Turkish Eggs", cuisine:"Turkey", time:"15 min", tags:["quick","vegetarian","breakfast"], ingredients:["egg","yogurt","garlic","butter","chili flakes","salt"], steps:["Whisk yogurt with a little crushed garlic and a pinch of salt, spread on a plate.","Poach or fry eggs to your liking.","Melt butter with chili flakes until fragrant.","Place eggs over the yogurt and spoon the chili butter on top."]},
+    {name:"Persian Herbed Rice", cuisine:"Iran", time:"35 min", tags:["vegetarian","vegan"], ingredients:["rice","dill","parsley","scallion","oil","salt"], steps:["Parboil rice until just tender, then drain.","Toss rice with chopped dill, parsley and scallion.","Steam gently in an oiled pot until a light crust forms on the bottom.","Fluff and serve, crust side up."]},
+    {name:"Moroccan Chickpea Tagine", cuisine:"Morocco", time:"35 min", tags:["vegetarian","vegan"], ingredients:["chickpeas","onion","carrot","garlic","tomato","cinnamon","cumin","paprika","dried apricot","oil","salt"], steps:["Sauté onion, carrot and garlic in oil until softened.","Stir in cinnamon, cumin and paprika, cook until fragrant.","Add tomato, chickpeas and apricot, cover and simmer 20 minutes.","Season with salt and serve."]},
+    {name:"Misir Wot", cuisine:"Ethiopia", time:"35 min", tags:["vegetarian","vegan"], ingredients:["lentils","onion","garlic","ginger","berbere","tomato paste","oil","salt"], steps:["Cook onion in oil slowly until deeply softened.","Add garlic, ginger and berbere, cook until fragrant.","Stir in tomato paste and lentils with water to cover.","Simmer 20 minutes until thick, season with salt."]},
+    {name:"Jollof Rice", cuisine:"Nigeria", time:"45 min", tags:["vegetarian","vegan"], ingredients:["rice","tomato","onion","bell pepper","garlic","ginger","chili","tomato paste","oil","salt"], steps:["Blend tomato, bell pepper, onion, garlic, ginger and chili into a purée.","Fry the purée with tomato paste in oil until deep red and reduced.","Add rice and enough water to cook it through.","Cover and cook on low heat until rice is tender, stirring occasionally."]},
+    {name:"Groundnut Stew", cuisine:"West Africa", time:"35 min", tags:["vegetarian","vegan"], ingredients:["peanut butter","tomato","onion","garlic","ginger","sweet potato","spinach","chili","oil","salt"], steps:["Sauté onion, garlic and ginger in oil until soft.","Stir in tomato and sweet potato, cook a few minutes.","Whisk in peanut butter and enough water to make a stew, simmer until sweet potato is tender.","Fold in spinach and season with salt and chili."]},
+    {name:"Koshari", cuisine:"Egypt", time:"40 min", tags:["vegetarian","vegan"], ingredients:["rice","lentils","macaroni","onion","tomato sauce","garlic","cumin","vinegar","oil","salt"], steps:["Cook rice, lentils and macaroni separately until tender.","Fry sliced onion in oil until deep golden and crisp.","Simmer tomato sauce with garlic, cumin and a splash of vinegar.","Layer rice, lentils and macaroni, top with tomato sauce and crispy onion."]},
+    {name:"Chilaquiles", cuisine:"Mexico", time:"20 min", tags:["quick","vegetarian","breakfast"], ingredients:["tortilla chips","tomato sauce","onion","egg","cheese","cilantro","oil","salt"], steps:["Warm tomato sauce with a little sautéed onion until simmering.","Toss tortilla chips in the sauce just until softened, not soggy.","Top with a fried egg and crumbled cheese.","Finish with cilantro."]},
+    {name:"Elote", cuisine:"Mexico", time:"15 min", tags:["quick","vegetarian","no-cook"], ingredients:["corn","mayonnaise","cheese","chili powder","lime","cilantro","salt"], steps:["Grill or pan-char corn until lightly blackened in spots.","Brush with mayonnaise.","Roll in crumbled cheese and chili powder.","Finish with lime juice, cilantro and salt."]},
+    {name:"Lomo Saltado", cuisine:"Peru", time:"25 min", tags:["quick"], ingredients:["beef","onion","tomato","soy sauce","vinegar","potato","oil","salt"], steps:["Fry potato until crisp, set aside.","Sear beef strips in a very hot pan, set aside.","Stir-fry onion and tomato briefly, keeping them firm.","Return beef and potato, toss with soy sauce and vinegar."]},
+    {name:"Brazilian Rice and Beans", cuisine:"Brazil", time:"30 min", tags:["vegetarian","vegan"], ingredients:["rice","black beans","onion","garlic","bay leaf","oil","salt"], steps:["Sauté onion and garlic in oil until soft.","Add black beans with their liquid and a bay leaf, simmer 15 minutes.","Cook rice separately until fluffy.","Serve rice topped with the beans."]},
+    {name:"Chimichurri Steak", cuisine:"Argentina", time:"20 min", tags:["quick"], ingredients:["beef","parsley","garlic","red wine vinegar","olive oil","chili flakes","salt"], steps:["Season steak with salt and sear to your preferred doneness, then rest.","Finely chop parsley and garlic.","Whisk with vinegar, olive oil and chili flakes.","Slice steak and spoon the chimichurri over."]},
+    {name:"Jerk Chicken", cuisine:"Jamaica", time:"40 min", tags:[], ingredients:["chicken thighs","scallion","garlic","ginger","allspice","thyme","chili","lime","oil","salt"], steps:["Blend scallion, garlic, ginger, allspice, thyme, chili and lime into a marinade.","Coat chicken and marinate as long as time allows.","Sear chicken, then finish in the oven at 400°F / 200°C until cooked through.","Rest briefly before serving."]},
+    {name:"Rice and Peas", cuisine:"Jamaica", time:"35 min", tags:["vegetarian","vegan"], ingredients:["rice","kidney beans","coconut milk","garlic","scallion","thyme","salt"], steps:["Simmer kidney beans with coconut milk, garlic, scallion and thyme.","Add rice and enough water to cook through.","Cover and cook on low heat until rice is tender.","Fluff and season with salt."]},
+    {name:"Borscht", cuisine:"Russia", time:"45 min", tags:["vegetarian"], ingredients:["beet","cabbage","carrot","onion","potato","garlic","vegetable broth","vinegar","salt"], steps:["Sauté onion and carrot until soft.","Add grated beet, cabbage and potato with broth.","Simmer 25–30 minutes until vegetables are tender.","Finish with a splash of vinegar and season with salt."]},
+    {name:"Spanakopita", cuisine:"Greece", time:"40 min", tags:["vegetarian"], ingredients:["spinach","feta","onion","garlic","egg","phyllo dough","butter","salt"], steps:["Sauté onion and garlic, wilt in spinach, cool slightly.","Mix in crumbled feta and beaten egg.","Layer buttered phyllo sheets, add filling and fold or roll.","Bake at 375°F / 190°C until golden, about 25 minutes."]},
+
+    {name:"Chicken Biryani", cuisine:"India", time:"50 min", tags:[], ingredients:["chicken thighs","rice","onion","yogurt","garlic","ginger","garam masala","chili powder","oil","salt"], steps:["Marinate chicken in yogurt, garlic, ginger and spices.","Fry sliced onion in oil until deep golden and crisp, set aside.","Sear the marinated chicken until browned.","Layer par-cooked rice over the chicken with fried onion, cover and steam on low heat until both are fully cooked."]},
+    {name:"Egg Curry", cuisine:"India", time:"25 min", tags:["quick","vegetarian"], ingredients:["egg","onion","tomato","garlic","ginger","garam masala","turmeric","chili powder","oil","salt"], steps:["Boil, peel and lightly fry eggs until blistered, set aside.","Sauté onion in oil until golden, add garlic and ginger.","Add tomato, turmeric, chili powder and garam masala, cook into a thick gravy.","Add eggs and simmer a few minutes to absorb the sauce."]},
+    {name:"Mutton Rogan Josh", cuisine:"India", time:"60 min", tags:[], ingredients:["lamb","onion","yogurt","garlic","ginger","garam masala","chili powder","bay leaf","oil","salt"], steps:["Sear lamb pieces in oil until browned, set aside.","Sauté onion until deep golden, add garlic, ginger and spices.","Return lamb with yogurt and a splash of water, cover and simmer until tender, about 45 minutes.","Adjust seasoning with salt before serving."]},
+    {name:"Fish Curry", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["fish","coconut milk","onion","tomato","garlic","ginger","turmeric","chili powder","curry leaves","oil","salt"], steps:["Sauté onion in oil until soft, add garlic, ginger and curry leaves.","Stir in turmeric and chili powder, then tomato, cook down slightly.","Pour in coconut milk and bring to a gentle simmer.","Slide in fish pieces and poach until just cooked through."]},
+    {name:"Keema Matar", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["minced lamb","peas","onion","tomato","garlic","ginger","garam masala","chili powder","oil","salt"], steps:["Sauté onion in oil until golden, add garlic and ginger.","Add minced lamb, breaking it up, and cook until browned.","Stir in tomato and spices, cook into a thick sauce.","Add peas and simmer until tender."]},
+    {name:"Chicken Tikka", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["chicken breast","yogurt","garlic","ginger","garam masala","chili powder","lemon","oil","salt"], steps:["Marinate chicken cubes in yogurt, garlic, ginger and spices.","Thread onto skewers if available.","Grill or pan-sear until charred in spots and cooked through.","Finish with a squeeze of lemon."]},
+    {name:"Chicken 65", cuisine:"India", time:"25 min", tags:["quick"], ingredients:["chicken breast","yogurt","garlic","ginger","chili powder","cornstarch","curry leaves","oil","salt"], steps:["Marinate chicken in yogurt, garlic, ginger, chili powder and cornstarch.","Fry until deeply golden and crisp.","Quickly fry curry leaves in the same oil until crackling.","Toss the chicken with the curry leaves and serve."]},
+    {name:"Prawn Masala", cuisine:"India", time:"25 min", tags:["quick"], ingredients:["shrimp","onion","tomato","garlic","ginger","turmeric","chili powder","garam masala","oil","salt"], steps:["Sauté onion in oil until soft, add garlic and ginger.","Stir in turmeric, chili powder and garam masala.","Add tomato and cook into a thick sauce.","Add shrimp and cook just until pink and opaque."]},
+    {name:"Rajma", cuisine:"India", time:"40 min", tags:["vegetarian","vegan"], ingredients:["kidney beans","onion","tomato","garlic","ginger","garam masala","cumin","oil","salt"], steps:["Sauté onion in oil until golden, add garlic and ginger.","Stir in cumin and garam masala.","Add tomato and kidney beans with a little water, simmer 20 minutes until thick.","Season with salt; traditionally served with rice."]},
+    {name:"Palak Paneer", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["paneer","spinach","onion","garlic","ginger","tomato","garam masala","cream","oil","salt"], steps:["Blanch spinach and blend into a smooth purée.","Sauté onion, garlic and ginger until soft, add tomato and spices.","Stir in the spinach purée and simmer briefly.","Fold in paneer cubes and a splash of cream, warm through."]},
+
+    {name:"Beef Bulgogi", cuisine:"Korea", time:"25 min", tags:["quick"], ingredients:["beef","soy sauce","sugar","garlic","ginger","sesame oil","pear","scallion","oil"], steps:["Whisk soy sauce, sugar, garlic, ginger and grated pear into a marinade.","Toss thinly sliced beef in the marinade, ideally for 20 minutes.","Sear in a very hot pan until caramelized at the edges.","Top with scallion and a drizzle of sesame oil."]},
+    {name:"Dak Bulgogi", cuisine:"Korea", time:"25 min", tags:["quick"], ingredients:["chicken thighs","gochujang","soy sauce","sugar","garlic","ginger","sesame oil","scallion","oil"], steps:["Whisk gochujang, soy sauce, sugar, garlic and ginger into a marinade.","Toss sliced chicken in the marinade.","Sear in a hot pan until cooked through and lightly charred.","Finish with scallion and a drizzle of sesame oil."]},
+    {name:"Kimchi Jjigae", cuisine:"Korea", time:"25 min", tags:["quick"], ingredients:["kimchi","pork","tofu","scallion","garlic","gochugaru","sesame oil","water"], steps:["Sear pork with garlic in a pot until browned.","Add kimchi and its juices, cook a few minutes.","Pour in water and gochugaru, simmer 15 minutes.","Add tofu and scallion, warm through before serving."]},
+
+    {name:"Yangzhou Fried Rice", cuisine:"China", time:"20 min", tags:["quick"], ingredients:["rice","shrimp","egg","ham","peas","carrot","scallion","soy sauce","oil"], steps:["Scramble egg in hot oil, set aside.","Stir-fry shrimp and diced ham until just cooked, set aside.","Add carrot and peas to the pan, then cold rice, breaking up clumps.","Return egg, shrimp and ham, season with soy sauce and top with scallion."]},
+    {name:"Hainanese Chicken Rice", cuisine:"China", time:"45 min", tags:[], ingredients:["chicken","rice","ginger","garlic","scallion","soy sauce","sesame oil","cucumber"], steps:["Gently poach whole chicken with ginger and scallion until just cooked through, then rest in the broth.","Cook rice in the reserved poaching broth with garlic and ginger for extra flavor.","Slice chicken and arrange over the rice with sliced cucumber.","Serve with a soy sauce and sesame oil dip."]},
+
+    {name:"Gyudon", cuisine:"Japan", time:"20 min", tags:["quick"], ingredients:["beef","onion","soy sauce","sugar","mirin","rice","scallion"], steps:["Simmer onion in soy sauce, sugar and mirin until softened.","Add thinly sliced beef and simmer until just cooked.","Spoon the beef and onion over a bowl of rice.","Top with scallion."]},
+    {name:"Oyakodon", cuisine:"Japan", time:"20 min", tags:["quick"], ingredients:["chicken thighs","egg","onion","soy sauce","sugar","mirin","rice","scallion"], steps:["Simmer sliced chicken and onion in soy sauce, sugar and mirin until the chicken is cooked.","Pour beaten egg over the top, cover and cook until just set.","Slide onto a bowl of rice.","Top with scallion."]},
+    {name:"Chicken Katsu Curry Rice", cuisine:"Japan", time:"35 min", tags:[], ingredients:["chicken breast","flour","egg","breadcrumbs","onion","curry powder","rice","oil"], steps:["Bread and fry chicken breast as for katsu, then slice.","Sauté onion until soft, stir in curry powder and a little flour, then water to make a sauce.","Simmer the curry sauce until glossy and thickened.","Serve the sliced katsu over rice with the curry sauce spooned on top."]},
+
+    {name:"Khao Man Gai", cuisine:"Thailand", time:"40 min", tags:[], ingredients:["chicken","rice","garlic","ginger","soy sauce","chili","cucumber","cilantro"], steps:["Poach chicken gently with garlic and ginger until just cooked, then rest in the broth.","Cook rice in the reserved poaching broth for extra flavor.","Slice chicken and serve over the rice with cucumber and cilantro.","Serve with a soy-chili dipping sauce."]},
+
+    {name:"Nasi Lemak", cuisine:"Malaysia", time:"35 min", tags:[], ingredients:["rice","coconut milk","egg","anchovies","peanuts","cucumber","chili","garlic","shallot"], steps:["Cook rice in coconut milk until fragrant and tender.","Fry anchovies and peanuts until crisp.","Blend chili, garlic and shallot into a paste and fry until deep red for a sambal.","Serve the rice with a boiled egg, the crispy anchovies, peanuts, cucumber and sambal."]},
+
+    {name:"Chicken Adobo", cuisine:"Philippines", time:"40 min", tags:[], ingredients:["chicken thighs","soy sauce","vinegar","garlic","bay leaf","black pepper","rice"], steps:["Combine chicken, soy sauce, vinegar, garlic, bay leaf and pepper in a pot.","Bring to a simmer and cook until the chicken is tender, about 30 minutes.","Uncover and reduce the sauce until slightly thickened.","Serve over rice."]},
+
+    {name:"Sri Lankan Chicken Curry", cuisine:"Sri Lanka", time:"40 min", tags:[], ingredients:["chicken thighs","onion","garlic","ginger","coconut milk","curry powder","cinnamon","chili","rice","oil"], steps:["Sauté onion, garlic and ginger in oil until soft.","Stir in curry powder, cinnamon and chili, cook until fragrant.","Add chicken and coconut milk, simmer until the chicken is cooked through and the sauce thickens.","Serve with rice."]},
+
+    {name:"Chicken Karahi", cuisine:"Pakistan", time:"35 min", tags:["quick"], ingredients:["chicken thighs","tomato","garlic","ginger","chili","garam masala","oil","salt","cilantro"], steps:["Sear chicken in hot oil until browned.","Add garlic, ginger and chili, cook until fragrant.","Add tomato and cook down into a thick sauce, stirring often.","Finish with garam masala and cilantro."]},
+
+    {name:"Dal Makhani", cuisine:"India", time:"45 min", tags:["vegetarian"], ingredients:["urad dal","kidney beans","butter","cream","tomato","garlic","ginger","garam masala","salt"], steps:["Soak and simmer urad dal and kidney beans until very soft.","Sauté garlic and ginger in butter, add tomato and cook down.","Combine with the cooked lentils and simmer slowly, mashing some for creaminess.","Stir in cream and garam masala just before serving."]},
+    {name:"Baingan Bharta", cuisine:"India", time:"30 min", tags:["vegetarian","vegan"], ingredients:["eggplant","onion","tomato","garlic","ginger","green chili","oil","salt"], steps:["Char eggplant directly over a flame or under a broiler until the skin blisters and flesh softens.","Peel and mash the flesh.","Sauté onion, garlic, ginger and chili in oil until soft.","Add tomato and cook down, then fold in the mashed eggplant and simmer briefly."]},
+    {name:"Malai Kofta", cuisine:"India", time:"40 min", tags:["vegetarian"], ingredients:["paneer","potato","cornstarch","onion","tomato","cashew","cream","garam masala","oil","salt"], steps:["Mash paneer and boiled potato with a little cornstarch, shape into balls and fry until golden.","Blend onion, tomato and cashew into a smooth gravy base, cook until thickened.","Stir in cream and garam masala.","Pour the gravy over the fried koftas just before serving."]},
+    {name:"Matar Paneer", cuisine:"India", time:"25 min", tags:["quick","vegetarian"], ingredients:["paneer","peas","onion","tomato","garlic","ginger","garam masala","oil","salt"], steps:["Lightly fry paneer cubes until golden, set aside.","Sauté onion, garlic and ginger until soft, add tomato and cook into a sauce.","Add peas and simmer until tender.","Return the paneer and warm through with garam masala."]},
+    {name:"Dum Aloo", cuisine:"India", time:"35 min", tags:["vegetarian"], ingredients:["baby potato","yogurt","onion","garlic","ginger","garam masala","chili powder","oil","salt"], steps:["Fry whole baby potatoes until lightly golden, set aside.","Sauté onion, garlic and ginger, then whisk in yogurt off the heat to prevent curdling.","Return to low heat with spices and the potatoes.","Cover and simmer until the potatoes are fully tender."]},
+    {name:"Sarson Ka Saag", cuisine:"India", time:"45 min", tags:["vegetarian"], ingredients:["mustard greens","spinach","ginger","garlic","green chili","cornmeal","butter","salt"], steps:["Simmer mustard greens and spinach with ginger, garlic and chili until very soft.","Blend to a coarse purée.","Return to the pot with a spoon of cornmeal to thicken, simmer until glossy.","Finish with a generous knob of butter."]},
+    {name:"Bhindi Masala", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["okra","onion","tomato","garlic","ginger","turmeric","chili powder","oil","salt"], steps:["Fry okra in oil until lightly browned and no longer slimy, set aside.","Sauté onion, garlic and ginger until soft.","Add tomato and spices, cook into a thick base.","Return the okra and toss gently to combine."]},
+    {name:"Aloo Paratha", cuisine:"India", time:"30 min", tags:["vegetarian","breakfast"], ingredients:["potato","flour","onion","green chili","cumin","coriander leaves","butter","salt"], steps:["Mash boiled potato with onion, chili, cumin and coriander leaves.","Roll out dough, place the filling in the center and seal, then roll flat again.","Cook on a hot griddle with butter until golden on both sides.","Serve hot."]},
+
+    {name:"Sambar", cuisine:"India", time:"40 min", tags:["vegetarian","vegan"], ingredients:["toor dal","tamarind","mixed vegetables","sambar powder","mustard seeds","curry leaves","oil","salt"], steps:["Simmer toor dal until soft, mash lightly.","Add tamarind pulp, vegetables and sambar powder, simmer until the vegetables are tender.","Temper mustard seeds and curry leaves in hot oil.","Pour the tempering over the sambar before serving."]},
+    {name:"Rasam", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["tomato","tamarind","black pepper","cumin","garlic","curry leaves","oil","salt"], steps:["Simmer tomato and tamarind pulp with crushed pepper and cumin until fragrant.","Temper mustard seeds, garlic and curry leaves in oil.","Pour the tempering into the broth.","Simmer briefly and serve hot."]},
+    {name:"Avial", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["mixed vegetables","coconut","yogurt","cumin","green chili","curry leaves","coconut oil","salt"], steps:["Simmer mixed vegetables until just tender.","Blend coconut, cumin and green chili into a coarse paste.","Stir the paste and a little yogurt into the vegetables.","Finish with curry leaves and a drizzle of coconut oil."]},
+    {name:"Poriyal", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["cabbage","coconut","mustard seeds","urad dal","curry leaves","green chili","oil","salt"], steps:["Temper mustard seeds, urad dal and curry leaves in hot oil.","Add shredded cabbage and green chili, stir-fry until just tender.","Fold in grated coconut.","Season with salt and serve."]},
+    {name:"Bisi Bele Bath", cuisine:"India", time:"45 min", tags:["vegetarian"], ingredients:["rice","toor dal","mixed vegetables","tamarind","bisi bele bath powder","ghee","salt"], steps:["Cook rice and toor dal together until soft.","Add tamarind, vegetables and spice powder, simmer until the vegetables are tender.","Mash lightly for a thick consistency.","Finish with a spoon of ghee."]},
+    {name:"Curd Rice", cuisine:"India", time:"10 min", tags:["quick","vegetarian","no-cook"], ingredients:["rice","yogurt","mustard seeds","curry leaves","green chili","ginger","oil","salt"], steps:["Mash cooked rice slightly and stir in yogurt until creamy.","Temper mustard seeds, curry leaves and chili in oil.","Pour the tempering over the rice and stir through.","Season with salt and chill briefly before serving."]},
+    {name:"Pongal", cuisine:"India", time:"25 min", tags:["vegetarian","breakfast"], ingredients:["rice","moong dal","black pepper","cumin","ginger","curry leaves","ghee","salt"], steps:["Cook rice and moong dal together until very soft and porridge-like.","Temper crushed pepper, cumin, ginger and curry leaves in ghee.","Stir the tempering into the rice and dal.","Season with salt and serve warm."]},
+    {name:"Upma", cuisine:"India", time:"15 min", tags:["quick","vegetarian","breakfast"], ingredients:["semolina","onion","mustard seeds","curry leaves","green chili","carrot","oil","salt"], steps:["Dry-roast semolina until lightly golden, set aside.","Temper mustard seeds and curry leaves in oil, add onion, chili and carrot.","Add water and bring to a boil.","Stir in the semolina and cook until thick and fluffy."]},
+    {name:"Masala Dosa", cuisine:"India", time:"40 min", tags:["vegetarian","breakfast"], ingredients:["rice","urad dal","potato","onion","mustard seeds","curry leaves","turmeric","oil","salt"], steps:["Soak and blend rice and urad dal, ferment overnight into a batter.","Make a spiced potato filling with onion, mustard seeds, curry leaves and turmeric.","Spread the batter thin on a hot griddle into a crepe.","Fill with the potato mixture, fold and serve."]},
+    {name:"Idli with Sambar", cuisine:"India", time:"30 min", tags:["vegetarian","breakfast"], ingredients:["rice","urad dal","sambar","salt"], steps:["Soak and blend rice and urad dal, ferment overnight into a thick batter.","Pour the batter into greased molds and steam until firm.","Unmold and serve warm.","Serve alongside sambar and coconut chutney."]},
+
+    {name:"Shukto", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["bitter gourd","eggplant","potato","drumstick","mustard","ginger","ghee","salt"], steps:["Lightly fry bitter gourd separately to temper its bitterness.","Sauté the remaining vegetables with ginger and a touch of mustard paste.","Add water and simmer until all vegetables are tender.","Finish with a spoon of ghee."]},
+    {name:"Aloo Posto", cuisine:"India", time:"25 min", tags:["quick","vegetarian","vegan"], ingredients:["potato","poppy seeds","green chili","mustard oil","turmeric","salt"], steps:["Blend poppy seeds and green chili with a little water into a paste.","Fry diced potato in mustard oil with turmeric until lightly golden.","Add the poppy seed paste and a splash of water, cover and simmer.","Cook until the potatoes are tender and the sauce clings to them."]},
+    {name:"Dalma", cuisine:"India", time:"35 min", tags:["vegetarian","vegan"], ingredients:["toor dal","pumpkin","raw banana","potato","turmeric","cumin","bay leaf","ghee","salt"], steps:["Simmer toor dal with pumpkin, raw banana and potato until everything is soft.","Mash lightly for a rustic texture.","Temper cumin and bay leaf in ghee.","Pour the tempering over the dal before serving."]},
+
+    {name:"Undhiyu", cuisine:"India", time:"50 min", tags:["vegetarian","vegan"], ingredients:["eggplant","sweet potato","raw banana","green beans","peas","coriander leaves","green chili","oil","salt"], steps:["Blend coriander leaves, green chili and a little oil into a masala paste.","Toss the mixed vegetables with the paste.","Cook covered on low heat, stirring occasionally, until all vegetables are tender.","Finish with fresh coriander leaves."]},
+    {name:"Dhokla", cuisine:"India", time:"30 min", tags:["vegetarian","breakfast"], ingredients:["gram flour","yogurt","ginger","green chili","mustard seeds","curry leaves","oil","salt"], steps:["Whisk gram flour with yogurt and water into a smooth batter, rest 20 minutes.","Stir in ginger, chili and a leavening agent, pour into a greased tray.","Steam until a toothpick comes out clean.","Temper mustard seeds and curry leaves in oil and pour over the top before slicing."]},
+    {name:"Thepla", cuisine:"India", time:"25 min", tags:["vegetarian","breakfast"], ingredients:["flour","fenugreek leaves","yogurt","turmeric","chili powder","oil","salt"], steps:["Knead flour with chopped fenugreek leaves, yogurt and spices into a soft dough.","Roll into thin flatbreads.","Cook on a hot griddle with a little oil until golden spots appear on both sides.","Serve warm."]},
+    {name:"Vegetable Misal", cuisine:"India", time:"35 min", tags:["vegetarian","vegan"], ingredients:["sprouted moong","onion","tomato","garlic","ginger","chili powder","oil","salt"], steps:["Sauté onion, garlic and ginger in oil until soft.","Add tomato and chili powder, cook into a thick base.","Add sprouted moong and a little water, simmer until tender.","Serve with a squeeze of lime."]},
+
+    {name:"Bamboo Shoot Vegetable Curry", cuisine:"India", time:"30 min", tags:["vegetarian","vegan"], ingredients:["bamboo shoot","potato","mustard oil","ginger","garlic","green chili","salt"], steps:["Sauté ginger, garlic and chili in mustard oil.","Add potato and bamboo shoot, stir to coat.","Add water, cover and simmer until the potato is tender.","Season with salt and serve."]},
+
+    {name:"Mutton Korma", cuisine:"India", time:"50 min", tags:[], ingredients:["lamb","yogurt","onion","garlic","ginger","cashew","garam masala","oil","salt"], steps:["Sear lamb in oil until browned, set aside.","Sauté onion until deep golden, blend with cashew and a little water into a paste.","Return the lamb with the paste, yogurt and garam masala.","Cover and simmer until the lamb is tender."]},
+    {name:"Seekh Kebab", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["minced lamb","onion","garlic","ginger","garam masala","green chili","coriander leaves","oil","salt"], steps:["Mix minced lamb with finely chopped onion, garlic, ginger, chili and spices.","Shape around skewers into long kebabs.","Grill or pan-sear, turning often, until browned and cooked through.","Finish with fresh coriander leaves."]},
+    {name:"Nihari", cuisine:"India", time:"90 min", tags:[], ingredients:["lamb shank","onion","garlic","ginger","flour","garam masala","chili powder","oil","salt"], steps:["Sear lamb shank in oil until browned.","Add onion, garlic, ginger and spices, cover with water and simmer very slowly until the meat is falling-apart tender.","Whisk a little flour with water and stir in to thicken.","Simmer a final few minutes before serving."]},
+    {name:"Mutton Biryani", cuisine:"India", time:"70 min", tags:[], ingredients:["lamb","rice","onion","yogurt","garlic","ginger","garam masala","chili powder","oil","salt"], steps:["Marinate lamb in yogurt, garlic, ginger and spices.","Fry sliced onion in oil until deep golden and crisp, set aside.","Sear the marinated lamb until browned, then simmer until nearly tender.","Layer par-cooked rice over the lamb with fried onion, cover and steam on low heat until both are fully cooked."]},
+
+    {name:"Chettinad Chicken", cuisine:"India", time:"35 min", tags:["quick"], ingredients:["chicken thighs","onion","tomato","garlic","ginger","coconut","black pepper","curry leaves","oil","salt"], steps:["Dry-roast and grind pepper, coconut and other whole spices into a coarse masala.","Sauté onion, garlic and ginger until soft.","Add tomato and the ground masala, cook into a thick base.","Add chicken and curry leaves, simmer until cooked through."]},
+    {name:"Kerala Fish Curry", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["fish","coconut milk","onion","tomato","garlic","ginger","curry leaves","chili powder","oil","salt"], steps:["Sauté onion, garlic and ginger in oil with curry leaves.","Add tomato and chili powder, cook down slightly.","Pour in coconut milk and bring to a gentle simmer.","Slide in fish and poach until just cooked through."]},
+    {name:"Malabar Chicken Curry", cuisine:"India", time:"35 min", tags:[], ingredients:["chicken thighs","coconut milk","onion","garlic","ginger","green chili","curry leaves","black pepper","oil","salt"], steps:["Sauté onion, garlic, ginger and green chili in oil until soft.","Add crushed pepper and curry leaves, cook until fragrant.","Add chicken and coconut milk, simmer until the chicken is cooked through and the sauce thickens."]},
+    {name:"Meen Moilee", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["fish","coconut milk","onion","ginger","turmeric","green chili","curry leaves","oil","salt"], steps:["Sauté onion, ginger, chili and curry leaves in oil until soft.","Stir in turmeric.","Add coconut milk and bring to a gentle simmer.","Slide in fish and poach gently until just cooked through."]},
+    {name:"Prawn Roast", cuisine:"India", time:"20 min", tags:["quick"], ingredients:["shrimp","onion","garlic","ginger","chili powder","turmeric","curry leaves","oil","salt"], steps:["Toss shrimp with turmeric and chili powder.","Sauté onion, garlic and ginger with curry leaves in oil until deeply golden.","Add shrimp and stir-fry until just cooked and lightly charred.","Season with salt."]},
+    {name:"Mutton Chukka", cuisine:"India", time:"40 min", tags:[], ingredients:["lamb","onion","garlic","ginger","coconut","black pepper","curry leaves","oil","salt"], steps:["Simmer lamb with garlic and ginger until tender, then drain.","Dry-roast and grind pepper and coconut into a coarse masala.","Sauté onion and curry leaves in oil, add the lamb and masala.","Stir-fry on high heat until dry and lightly charred."]},
+
+    {name:"Macher Jhol", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["fish","potato","tomato","ginger","turmeric","cumin","mustard oil","salt"], steps:["Fry fish pieces lightly in mustard oil, set aside.","Sauté potato and tomato with ginger and turmeric.","Add water and simmer until the potato is tender.","Return the fish and simmer briefly to finish cooking through."]},
+    {name:"Chingri Malai Curry", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["shrimp","coconut milk","onion","ginger","turmeric","green chili","mustard oil","salt"], steps:["Sauté onion and ginger in mustard oil until soft.","Stir in turmeric and green chili.","Add coconut milk and bring to a gentle simmer.","Add shrimp and cook just until pink and opaque."]},
+    {name:"Kosha Mangsho", cuisine:"India", time:"60 min", tags:[], ingredients:["lamb","onion","yogurt","garlic","ginger","garam masala","mustard oil","salt"], steps:["Marinate lamb in yogurt, garlic and ginger.","Sear in mustard oil until deeply browned.","Add sliced onion and garam masala, cover and simmer slowly, stirring occasionally.","Cook until the meat is tender and the sauce is thick and dark."]},
+
+    {name:"Goan Fish Curry", cuisine:"India", time:"30 min", tags:["quick"], ingredients:["fish","coconut","tamarind","onion","garlic","ginger","chili","turmeric","oil","salt"], steps:["Blend coconut, tamarind, chili and turmeric into a smooth paste.","Sauté onion, garlic and ginger in oil until soft.","Add the paste and a little water, simmer until fragrant.","Slide in fish and poach until just cooked through."]},
+    {name:"Pork Vindaloo", cuisine:"India", time:"60 min", tags:[], ingredients:["pork","vinegar","garlic","ginger","chili powder","cumin","cinnamon","onion","oil","salt"], steps:["Marinate pork in vinegar, garlic, ginger and spices, ideally overnight.","Sear the marinated pork in oil until browned.","Add onion and the marinade, cover and simmer until the pork is tender.","Uncover and reduce the sauce until thickened."]},
+    {name:"Kolhapuri Chicken", cuisine:"India", time:"35 min", tags:["quick"], ingredients:["chicken thighs","coconut","onion","garlic","ginger","dried chili","tomato","oil","salt"], steps:["Dry-roast and grind coconut and dried chili into a fiery masala paste.","Sauté onion, garlic and ginger until soft, add tomato and cook down.","Stir in the masala paste and chicken.","Simmer until the chicken is cooked through."]},
+    {name:"Parsi Dhansak", cuisine:"India", time:"50 min", tags:[], ingredients:["lamb","lentils","pumpkin","eggplant","onion","garlic","ginger","garam masala","oil","salt"], steps:["Simmer lentils with pumpkin and eggplant until soft, then blend smooth.","Sear lamb with onion, garlic and ginger until browned.","Combine the lamb with the lentil purée and garam masala.","Simmer until the lamb is tender."]},
+
+    {name:"Pork with Bamboo Shoot", cuisine:"India", time:"45 min", tags:[], ingredients:["pork","bamboo shoot","ginger","garlic","green chili","mustard oil","salt"], steps:["Sear pork in mustard oil until browned.","Add ginger, garlic and chili, cook until fragrant.","Add bamboo shoot and a little water, cover and simmer until the pork is tender.","Season with salt."]},
+
+    {name:"Roti", cuisine:"India", time:"15 min", tags:["quick","vegetarian","vegan"], ingredients:["flour","water","salt","oil"], steps:["Knead flour, water and a pinch of salt into a soft dough, rest 15 minutes.","Divide and roll into thin rounds.","Cook on a hot dry griddle until small bubbles form, then flip.","Puff briefly over an open flame or press with a cloth, then serve warm."]},
+    {name:"Naan", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["flour","yogurt","yeast","sugar","oil","butter","salt"], steps:["Mix flour with yogurt, yeast, sugar and a little oil into a soft dough, let rise 1 hour.","Divide and roll into ovals.","Cook in a very hot oven or skillet until puffed and charred in spots.","Brush with butter before serving."]},
+    {name:"Puri", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["flour","water","oil","salt"], steps:["Knead flour, water, a little oil and salt into a firm dough.","Roll into small rounds.","Deep-fry in hot oil, spooning oil over the top, until puffed and golden.","Drain and serve immediately."]},
+    {name:"Bhatura", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["flour","yogurt","baking powder","sugar","oil","salt"], steps:["Mix flour with yogurt, baking powder, sugar and a little oil into a soft dough, rest at least 2 hours.","Divide and roll into ovals.","Deep-fry in hot oil until puffed and golden on both sides.","Serve hot."]},
+    {name:"Kulcha", cuisine:"India", time:"40 min", tags:["vegetarian"], ingredients:["flour","yogurt","baking powder","butter","salt"], steps:["Mix flour with yogurt, baking powder and salt into a soft dough, rest 1 hour.","Divide and roll into rounds.","Cook in a hot oven or skillet until puffed and lightly charred.","Brush with butter before serving."]},
+
+    {name:"Vegetable Pulao", cuisine:"India", time:"25 min", tags:["quick","vegetarian","vegan"], ingredients:["rice","mixed vegetables","onion","garlic","ginger","whole spices","oil","salt"], steps:["Sauté whole spices, onion, garlic and ginger in oil until fragrant.","Add mixed vegetables and stir briefly.","Add rice and water, bring to a boil.","Cover and cook on low heat until the rice is tender."]},
+    {name:"Khichdi", cuisine:"India", time:"30 min", tags:["vegetarian","vegan"], ingredients:["rice","moong dal","turmeric","cumin","ghee","salt"], steps:["Rinse rice and moong dal together.","Simmer with turmeric and water until soft and porridge-like.","Temper cumin in ghee and stir through.","Season with salt and serve warm."]},
+    {name:"Lemon Rice", cuisine:"India", time:"15 min", tags:["quick","vegetarian","vegan"], ingredients:["rice","lemon","mustard seeds","urad dal","curry leaves","turmeric","green chili","oil","salt"], steps:["Temper mustard seeds, urad dal, curry leaves and chili in oil.","Stir in turmeric briefly.","Add cooked rice and toss to coat evenly.","Finish with a generous squeeze of lemon juice."]},
+    {name:"Tamarind Rice", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["rice","tamarind","mustard seeds","peanuts","curry leaves","turmeric","oil","salt"], steps:["Simmer tamarind pulp with turmeric until thickened into a paste.","Temper mustard seeds, peanuts and curry leaves in oil.","Stir in the tamarind paste.","Toss with cooked rice until evenly coated."]},
+    {name:"Jeera Rice", cuisine:"India", time:"15 min", tags:["quick","vegetarian","vegan"], ingredients:["rice","cumin","bay leaf","ghee","salt"], steps:["Temper cumin seeds and bay leaf in ghee until fragrant.","Add rice and water, season with salt.","Bring to a boil, then cover and cook on low heat until tender.","Fluff before serving."]},
+
+    {name:"Samosa", cuisine:"India", time:"40 min", tags:["vegetarian","vegan"], ingredients:["flour","potato","peas","cumin","coriander seed","green chili","oil","salt"], steps:["Make a firm dough with flour, oil and water, rest 20 minutes.","Mash boiled potato with peas and spices for the filling.","Shape dough into cones, fill and seal into triangles.","Deep-fry until golden and crisp."]},
+    {name:"Pakora", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["gram flour","onion","potato","green chili","chili powder","oil","salt"], steps:["Whisk gram flour with water into a thick batter.","Toss in sliced onion, potato and chili.","Drop spoonfuls into hot oil.","Fry until golden and crisp on all sides."]},
+    {name:"Bhel Puri", cuisine:"India", time:"10 min", tags:["quick","vegetarian","vegan","no-cook"], ingredients:["puffed rice","tomato","onion","potato","tamarind chutney","green chutney","sev","cilantro"], steps:["Toss puffed rice with diced tomato, onion and potato.","Add tamarind and green chutney to taste.","Mix quickly and evenly.","Top with sev and cilantro, serve immediately."]},
+    {name:"Vada Pav", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["potato","gram flour","garlic","green chili","mustard seeds","pav bread","chutney","oil","salt"], steps:["Mash boiled potato with garlic, chili and mustard seeds, shape into balls.","Dip in gram flour batter and deep-fry until golden.","Split pav bread and spread with chutney.","Sandwich the fried potato ball inside."]},
+    {name:"Pav Bhaji", cuisine:"India", time:"35 min", tags:["vegetarian"], ingredients:["potato","mixed vegetables","onion","tomato","garlic","pav bhaji masala","butter","pav bread","salt"], steps:["Boil and mash potato with the mixed vegetables until soft.","Sauté onion, garlic and tomato in butter until broken down.","Combine with the mashed vegetables and pav bhaji masala, mash further and simmer.","Toast pav bread in butter and serve alongside."]},
+    {name:"Kachori", cuisine:"India", time:"35 min", tags:["vegetarian","vegan"], ingredients:["flour","moong dal","fennel seed","coriander seed","chili powder","oil","salt"], steps:["Make a firm dough with flour, oil and water.","Cook soaked moong dal with fennel, coriander and chili powder into a dry filling.","Wrap the filling in dough and flatten slightly.","Deep-fry until golden and crisp."]},
+    {name:"Aloo Tikki", cuisine:"India", time:"20 min", tags:["quick","vegetarian","vegan"], ingredients:["potato","cornstarch","green chili","ginger","cumin","coriander leaves","oil","salt"], steps:["Mash boiled potato with cornstarch, chili, ginger, cumin and coriander leaves.","Shape into flat patties.","Shallow-fry until golden and crisp on both sides.","Serve hot."]},
+    {name:"Chicken Momos", cuisine:"India", time:"40 min", tags:[], ingredients:["flour","minced chicken","garlic","ginger","scallion","soy sauce","oil","salt"], steps:["Make a simple dough with flour and water, rest briefly, then roll into small rounds.","Mix minced chicken with garlic, ginger, scallion and soy sauce for the filling.","Fill and pleat the dough into small dumplings.","Steam until the filling is fully cooked through."]},
+
+    {name:"Gulab Jamun", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["milk powder","flour","milk","sugar","cardamom","oil","ghee"], steps:["Mix milk powder, flour and a little milk into a soft dough, shape into small balls.","Fry gently in oil or ghee until deep golden all over.","Meanwhile, simmer sugar, water and cardamom into a light syrup.","Soak the fried balls in warm syrup until plump."]},
+    {name:"Jalebi", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["flour","yogurt","sugar","saffron","cardamom","oil","ghee"], steps:["Whisk flour and yogurt with water into a smooth, slightly fermented batter.","Pipe the batter into hot oil in overlapping spirals, fry until crisp.","Meanwhile, make a sugar syrup with saffron and cardamom.","Soak the fried spirals briefly in warm syrup."]},
+    {name:"Rasgulla", cuisine:"India", time:"40 min", tags:["vegetarian"], ingredients:["milk","lemon","sugar","cardamom"], steps:["Curdle milk with lemon juice, strain and rinse the paneer curds.","Knead the curds until smooth, then shape into small balls.","Simmer sugar and water into a syrup with cardamom.","Poach the balls in the boiling syrup until they double in size."]},
+    {name:"Rasmalai", cuisine:"India", time:"40 min", tags:["vegetarian"], ingredients:["milk","lemon","sugar","cardamom","saffron","pistachio"], steps:["Curdle milk with lemon juice, strain and knead the curds until smooth.","Shape into flat discs and poach in sugar syrup until spongy.","Meanwhile, reduce milk with cardamom and saffron until thickened.","Soak the poached discs in the flavored milk and top with pistachio."]},
+    {name:"Kheer", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["rice","milk","sugar","cardamom","cashew","raisin"], steps:["Simmer rice in milk over low heat, stirring often, until very soft and the milk has thickened.","Stir in sugar and cardamom.","Toast cashew and raisin lightly and fold in.","Serve warm or chilled."]},
+    {name:"Suji Halwa", cuisine:"India", time:"15 min", tags:["quick","vegetarian"], ingredients:["semolina","ghee","sugar","water","cardamom","cashew"], steps:["Roast semolina in ghee until golden and fragrant.","Add sugar dissolved in warm water, stirring constantly to avoid lumps.","Cook until the mixture thickens and pulls away from the pan.","Finish with cardamom and toasted cashew."]},
+    {name:"Barfi", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["milk powder","condensed milk","ghee","cardamom","pistachio"], steps:["Warm ghee in a pan and stir in milk powder and condensed milk.","Cook over low heat, stirring constantly, until it thickens into a dough-like mass.","Stir in cardamom and spread onto a greased tray.","Cool, top with pistachio and cut into squares."]},
+    {name:"Besan Ladoo", cuisine:"India", time:"25 min", tags:["vegetarian"], ingredients:["gram flour","ghee","sugar","cardamom","cashew"], steps:["Roast gram flour in ghee over low heat until deeply golden and fragrant.","Remove from heat and let cool slightly.","Stir in powdered sugar and cardamom.","Shape into small balls while still warm, studding each with a piece of cashew."]},
+    {name:"Kulfi", cuisine:"India", time:"20 min", tags:["vegetarian"], ingredients:["milk","sugar","cardamom","pistachio","saffron"], steps:["Simmer milk until reduced and slightly thickened.","Stir in sugar, cardamom and saffron.","Pour into molds and freeze until firm.","Unmold and top with chopped pistachio before serving."]},
+    {name:"Payasam", cuisine:"India", time:"30 min", tags:["vegetarian"], ingredients:["vermicelli","milk","sugar","cardamom","cashew","raisin","ghee"], steps:["Toast vermicelli in ghee until lightly golden.","Add milk and simmer until the vermicelli is soft and the milk has thickened.","Stir in sugar and cardamom.","Toast cashew and raisin in ghee and fold in before serving."]},
+
+    {name:"Masala Chai", cuisine:"India", time:"10 min", tags:["quick","vegetarian"], ingredients:["tea leaves","milk","water","ginger","cardamom","sugar"], steps:["Simmer water with crushed ginger and cardamom for a few minutes.","Add tea leaves and simmer briefly to steep.","Add milk and sugar, bring back to a gentle boil.","Strain into cups and serve hot."]},
+    {name:"Lassi", cuisine:"India", time:"5 min", tags:["quick","vegetarian","no-cook"], ingredients:["yogurt","sugar","water","cardamom"], steps:["Blend yogurt with water and sugar until smooth and frothy.","Add a pinch of cardamom if desired.","Pour over ice.","Serve chilled."]},
+    {name:"Chaas", cuisine:"India", time:"5 min", tags:["quick","vegetarian","vegan","no-cook"], ingredients:["yogurt","water","cumin","ginger","green chili","cilantro","salt"], steps:["Blend yogurt with water until smooth and thin.","Add roasted cumin, ginger, chili and a little salt.","Blend briefly again.","Serve chilled, garnished with cilantro."]},
+    {name:"Nimbu Pani", cuisine:"India", time:"5 min", tags:["quick","vegetarian","vegan","no-cook"], ingredients:["lemon","water","sugar","salt","cumin"], steps:["Squeeze lemon juice into a jug of water.","Stir in sugar, a pinch of salt and roasted cumin to taste.","Mix well until dissolved.","Serve over ice."]},
+    {name:"Filter Coffee", cuisine:"India", time:"10 min", tags:["quick","vegetarian"], ingredients:["coffee powder","milk","sugar","water"], steps:["Brew coffee powder with hot water through a filter, allowing it to drip slowly.","Heat milk until steaming.","Combine the strong decoction with hot milk and sugar to taste.","Pour back and forth between two cups to froth before serving."]},
+    {name:"Thandai", cuisine:"India", time:"15 min", tags:["vegetarian","no-cook"], ingredients:["milk","almonds","cardamom","saffron","sugar","fennel seed","rose water"], steps:["Soak almonds and fennel seed briefly, then blend with a little milk into a smooth paste.","Strain the paste to remove any grit.","Whisk the strained mixture into the remaining milk with sugar, cardamom, saffron and rose water.","Chill before serving."]}
+  ];
+
+  var STAPLES = ["salt","black pepper","olive oil","oil","garlic","onion","egg","butter","ginger","soy sauce","rice","cumin","turmeric","yogurt"];
+
+  var PALETTE = ["--herb", "--mustard", "--tomato", "--sky", "--plum", "--berry"];
+  function accentFor(str){
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+    }
+    return "var(" + PALETTE[hash % PALETTE.length] + ")";
+  }
+
+  // ---------- State ----------
+  var pantry = [];
+  var activeFilter = "all";
+  var activeCuisine = "all";
+  var storageOK = true;
+
+  function loadPantry(){
+    try {
+      var raw = localStorage.getItem("pantry-items");
+      if (raw) pantry = JSON.parse(raw);
+    } catch(e) {
+      storageOK = false;
+      pantry = [];
+    }
+  }
+  function savePantry(){
+    try {
+      localStorage.setItem("pantry-items", JSON.stringify(pantry));
+    } catch(e) {
+      storageOK = false;
+    }
+  }
+  function loadTheme(){
+    try {
+      var t = localStorage.getItem("pantry-theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+        themeToggle.textContent = t === "dark" ? "Light mode" : "Dark mode";
+      }
+    } catch(e) {}
+  }
+  function saveTheme(t){
+    try { localStorage.setItem("pantry-theme", t); } catch(e) {}
+  }
+
+  // ---------- DOM refs ----------
+  var addForm = document.getElementById("addForm");
+  var itemInput = document.getElementById("itemInput");
+  var pantryList = document.getElementById("pantryList");
+  var pantryCount = document.getElementById("pantryCount");
+  var quickAdd = document.getElementById("quickAdd");
+  var recipeGrid = document.getElementById("recipeGrid");
+  var recipeSub = document.getElementById("recipeSub");
+  var noMatch = document.getElementById("noMatch");
+  var filterRow = document.getElementById("filterRow");
+  var cuisineSelect = document.getElementById("cuisineSelect");
+  var themeToggle = document.getElementById("themeToggle");
+
+  // ---------- Rendering ----------
+  function normalize(s){ return s.trim().toLowerCase(); }
+
+  function renderQuickAdd(){
+    var frag = document.createDocumentFragment();
+    var label = document.createElement("span");
+    label.textContent = "common staples";
+    frag.appendChild(label);
+    STAPLES.forEach(function(item){
+      if (pantry.indexOf(item) !== -1) return;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.style.setProperty("--dot", accentFor(item));
+      btn.textContent = "+ " + item;
+      btn.addEventListener("click", function(){ addItem(item); });
+      frag.appendChild(btn);
+    });
+    quickAdd.innerHTML = "";
+    quickAdd.appendChild(frag);
+  }
+
+  function renderPantry(){
+    pantryList.innerHTML = "";
+    if (pantry.length === 0) {
+      var empty = document.createElement("li");
+      empty.className = "empty-pantry";
+      empty.textContent = "Nothing added yet. Start with what's in your fridge or cupboard.";
+      pantryList.replaceWith(empty);
+      empty.id = "pantryList";
+      pantryList = empty;
+    } else {
+      if (pantryList.tagName !== "UL") {
+        var ul = document.createElement("ul");
+        ul.className = "pantry-list";
+        ul.id = "pantryList";
+        pantryList.replaceWith(ul);
+        pantryList = ul;
+      }
+      pantry.forEach(function(item, i){
+        var li = document.createElement("li");
+        var span = document.createElement("span");
+        span.className = "name";
+        span.style.setProperty("--dot", accentFor(item));
+        span.textContent = item;
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("aria-label", "Remove " + item);
+        btn.textContent = "×";
+        btn.addEventListener("click", function(){ removeItem(i); });
+        li.appendChild(span);
+        li.appendChild(btn);
+        pantryList.appendChild(li);
+      });
+    }
+    pantryCount.textContent = pantry.length === 0 ? "" : pantry.length + " item" + (pantry.length === 1 ? "" : "s") + " logged" + (storageOK ? " · saved on this device" : " · not saved (storage unavailable)");
+    renderQuickAdd();
+  }
+
+  function scoreRecipe(recipe){
+    var have = 0, missing = [];
+    recipe.ingredients.forEach(function(ing){
+      var found = pantry.some(function(p){ return ing.indexOf(p) !== -1 || p.indexOf(ing) !== -1; });
+      if (found) have++; else missing.push(ing);
+    });
+    return { have: have, total: recipe.ingredients.length, missing: missing, pct: have / recipe.ingredients.length };
+  }
+
+  function populateCuisines(){
+    var cuisines = [];
+    RECIPES.forEach(function(r){ if (cuisines.indexOf(r.cuisine) === -1) cuisines.push(r.cuisine); });
+    cuisines.sort();
+    cuisineSelect.innerHTML = "";
+    var allOpt = document.createElement("option");
+    allOpt.value = "all";
+    allOpt.textContent = "All cuisines (" + cuisines.length + ")";
+    cuisineSelect.appendChild(allOpt);
+    cuisines.forEach(function(c){
+      var opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      cuisineSelect.appendChild(opt);
+    });
+    cuisineSelect.addEventListener("change", function(){
+      activeCuisine = cuisineSelect.value;
+      render();
+    });
+  }
+
+  function renderFilters(){
+    var tags = ["all", "ready", "vegetarian", "vegan", "quick", "breakfast", "no-cook"];
+    filterRow.innerHTML = "";
+    tags.forEach(function(tag){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = tag === "all" ? "All" : tag === "ready" ? "Ready now" : tag.charAt(0).toUpperCase() + tag.slice(1);
+      if (tag === activeFilter) btn.className = "active";
+      btn.addEventListener("click", function(){ activeFilter = tag; render(); });
+      filterRow.appendChild(btn);
+    });
+  }
+
+  function renderRecipes(){
+    recipeGrid.innerHTML = "";
+    if (pantry.length === 0) {
+      recipeSub.textContent = "Add a few ingredients to see matches.";
+      recipeGrid.style.display = "none";
+      noMatch.style.display = "none";
+      return;
+    }
+    recipeGrid.style.display = "grid";
+
+    var scored = RECIPES.map(function(r){
+      var s = scoreRecipe(r);
+      return { recipe: r, score: s };
+    });
+
+    scored = scored.filter(function(item){
+      if (activeCuisine !== "all" && item.recipe.cuisine !== activeCuisine) return false;
+      if (activeFilter === "all") return true;
+      if (activeFilter === "ready") return item.score.missing.length === 0;
+      return item.recipe.tags.indexOf(activeFilter) !== -1;
+    });
+
+    scored = scored.filter(function(item){ return item.score.have > 0; });
+    scored.sort(function(a, b){
+      if (b.score.pct !== a.score.pct) return b.score.pct - a.score.pct;
+      return b.score.have - a.score.have;
+    });
+    scored = scored.slice(0, 18);
+
+    var readyCount = scored.filter(function(i){ return i.score.missing.length === 0; }).length;
+    recipeSub.textContent = readyCount > 0
+      ? "You can make " + readyCount + " recipe" + (readyCount === 1 ? "" : "s") + " right now, no shopping needed."
+      : "Closest matches to what you have — a few things are still missing.";
+
+    if (scored.length === 0) {
+      noMatch.style.display = "block";
+      noMatch.textContent = "No recipes match yet. Try adding more pantry staples like garlic, onion, egg or oil.";
+      return;
+    }
+    noMatch.style.display = "none";
+
+    scored.forEach(function(item){
+      var r = item.recipe, s = item.score;
+      var card = document.createElement("article");
+      card.className = "recipe-card " + (s.missing.length === 0 ? "ready" : "partial");
+      if (s.missing.length !== 0) {
+        card.style.setProperty("--accent", accentFor(r.name));
+      }
+
+      var pill = document.createElement("span");
+      pill.className = "match-pill";
+      pill.textContent = s.missing.length === 0 ? "Ready to cook" : s.have + "/" + s.total + " have";
+      card.appendChild(pill);
+
+      var h3 = document.createElement("h3");
+      h3.textContent = r.name;
+      card.appendChild(h3);
+
+      var meta = document.createElement("div");
+      meta.className = "recipe-meta";
+      var cuisineChip = document.createElement("span");
+      cuisineChip.className = "cuisine-chip";
+      cuisineChip.textContent = r.cuisine;
+      meta.appendChild(cuisineChip);
+      var timeSpan = document.createElement("span");
+      timeSpan.textContent = r.time;
+      meta.appendChild(timeSpan);
+      if (r.tags.length) {
+        var tagSpan = document.createElement("span");
+        tagSpan.textContent = r.tags.join(" · ");
+        meta.appendChild(tagSpan);
+      }
+      card.appendChild(meta);
+
+      var line = document.createElement("div");
+      line.className = "ingredient-line";
+      r.ingredients.forEach(function(ing, idx){
+        var isMissing = s.missing.indexOf(ing) !== -1;
+        var span = document.createElement("span");
+        span.className = isMissing ? "missing" : "have";
+        span.textContent = ing;
+        line.appendChild(span);
+        if (idx < r.ingredients.length - 1) line.appendChild(document.createTextNode(", "));
+      });
+      card.appendChild(line);
+
+      var details = document.createElement("details");
+      var summary = document.createElement("summary");
+      summary.textContent = "Steps";
+      details.appendChild(summary);
+      var ol = document.createElement("ol");
+      r.steps.forEach(function(step){
+        var li = document.createElement("li");
+        li.textContent = step;
+        ol.appendChild(li);
+      });
+      details.appendChild(ol);
+      card.appendChild(details);
+
+      recipeGrid.appendChild(card);
+    });
+  }
+
+  function render(){
+    renderPantry();
+    renderFilters();
+    renderRecipes();
+  }
+
+  // ---------- Actions ----------
+  function addItem(raw){
+    var name = normalize(raw);
+    if (!name) return;
+    if (pantry.indexOf(name) !== -1) return;
+    pantry.push(name);
+    savePantry();
+    render();
+  }
+  function removeItem(index){
+    pantry.splice(index, 1);
+    savePantry();
+    render();
+  }
+
+  addForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    addItem(itemInput.value);
+    itemInput.value = "";
+    itemInput.focus();
+  });
+
+  themeToggle.addEventListener("click", function(){
+    var current = document.documentElement.getAttribute("data-theme");
+    var next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    themeToggle.textContent = next === "dark" ? "Light mode" : "Dark mode";
+    saveTheme(next);
+  });
+
+  // ---------- Install as app ----------
+  var installBtn = document.getElementById("installBtn");
+  var iosTip = document.getElementById("iosTip");
+  var deferredInstallPrompt = null;
+  var isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    installBtn.style.display = "inline-block";
+  });
+  installBtn.addEventListener("click", function(){
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.finally(function(){
+      deferredInstallPrompt = null;
+      installBtn.style.display = "none";
+    });
+  });
+  window.addEventListener("appinstalled", function(){
+    installBtn.style.display = "none";
+  });
+
+  if (!isStandalone) {
+    var isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+    var isSafari = /safari/.test(navigator.userAgent.toLowerCase()) && !/crios|fxios|edgios/.test(navigator.userAgent.toLowerCase());
+    if (isIOS && isSafari) {
+      iosTip.style.display = "block";
+    }
+  }
+
+  // ---------- Init ----------
+  loadTheme();
+  loadPantry();
+  populateCuisines();
+  render();
+})();
+</script>
+</body>
+</html>
